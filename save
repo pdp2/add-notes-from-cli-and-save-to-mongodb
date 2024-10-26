@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Change this to your database name
+dbName="notes"
+# Change this to your collection name
+collectionName="general"
+
+printf "\e[32m💾 Save a note\e[0m\n"
+
+# Prompt for username at the beginning
+printf "\n\e[36mPlease enter your username:\e[0m\n"
+read username
+
+printf "\n\e[32mWelcome, $username!\e[0m\n"
+
+# Prompt for password
+printf "\e[36mPlease enter your password:\e[0m\n"
+read -s password
+
+while true; do
+  # \e[32m is for green and \e[0m resets
+  printf "\n\e[36mEnter a note (or type 'exit' to quit):\e[0m\n"
+  read note
+
+  if [ "$note" = "exit" ]; then
+    printf "\n\e[32mGoodbye, $username!\e[0m\n"
+    exit 0
+  fi
+
+  tags=()
+
+  while true; do
+    printf "\e[36mEnter a tag for this note (or press enter when done):\e[0m\n"
+    read tag
+
+    # Break if empty (just pressed enter)
+    if [ -z "$tag" ]; then
+      break
+    fi
+
+    # Add tag to array
+    tags+=("$tag")
+
+    printf "\n\e[36mTag added. Add another? (y/n):\e[0m\n"
+    read another
+    if [ "$another" != "y" ]; then
+      break
+    fi
+  done
+
+  # Get current date
+  date=$(date +"%Y-%m-%d %H:%M:%S")
+
+  printf "\e[32m\nOK, $username. Saving:\e[0m\n"
+  echo "Date: $date"
+  echo "User: $username"
+  echo "Tags: $(printf '"%s", ' "${tags[@]}" | sed 's/, $//')"
+  echo "Note: $note"
+
+  # Create a JSON object with the note details
+  json_data=$(jq -n \
+    --arg date "$date" \
+    --arg username "$username" \
+    --argjson tags "$(printf '%s\n' "${tags[@]}" | jq -R . | jq -s .)" \
+    --arg note "$note" \
+    '{date: $date, username: $username, tags: $tags, note: $note}')
+
+  currentDir=$(dirname "${BASH_SOURCE[0]}")
+  
+  # Save the JSON object to temporary file
+  jsonFilePath="$currentDir/note_temp.json"
+  echo "$json_data" > $jsonFilePath
+  
+  configFile=$currentDir/config.yaml
+
+  if [ ! -f "$configFile" ]; then
+    printf "\n\e[31mConfig file not found. Please enter your MongoDB connection string:\e[0m\n"
+    read connectionString
+
+    response=$(mongoimport --uri $connectionString --username $username --password $password --db $dbName --collection $collectionName --file $jsonFilePath 2>&1)
+  else
+    printf "\n\e[32mUsing config file: $configFile\e[0m\n"
+
+    response=$(mongoimport --config $configFile --username $username --password $password --db $dbName --collection $collectionName --file $jsonFilePath 2>&1)
+  fi
+
+  if [ $? -eq 0 ]; then
+    printf "\n\e[32mNote saved successfully!\e[0m\n"
+  else
+    printf "\n\e[31mCommand failed with exit code: $?\e[0m\n"
+    printf "\n\e[31m$response\e[0m\n"
+    exit 1
+  fi
+done
