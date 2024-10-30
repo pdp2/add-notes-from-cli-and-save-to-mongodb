@@ -54,8 +54,8 @@ while true; do
   printf "\e[32m\nOK, $username. Saving:\e[0m\n"
   echo "Date: $date"
   echo "User: $username"
-  echo "Tags: $(printf '"%s", ' "${tags[@]}" | sed 's/, $//')"
   echo "Note: $note"
+  echo "Tags: $(printf '"%s", ' "${tags[@]}" | sed 's/, $//')"
 
   # Create a JSON object with the note details
   json_data=$(jq -n \

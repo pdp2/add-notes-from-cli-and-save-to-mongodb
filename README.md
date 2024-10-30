@@ -9,3 +9,13 @@ uri: mongodb+srv://cluster7.something.mongodb.net/
 ```
 
 Alternatively you will be prompted for the connection string when running the script.
+
+## Tests
+
+To run tests, [the bats-core testing system](https://bats-core.readthedocs.io/en/stable/installation.html) is required.
+
+Tests can be run with the following command:
+
+```
+bats tests/save.bats
+```
