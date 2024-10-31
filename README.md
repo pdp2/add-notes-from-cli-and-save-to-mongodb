@@ -8,6 +8,14 @@ You can specify the connection string in a file called "config.yaml" in the foll
 uri: mongodb+srv://cluster7.something.mongodb.net/
 ```
 
+## Run
+
+After downloading the repo, you can run the script by entering the following command when inside the repo folder:
+
+```
+./save
+```
+
 Alternatively you will be prompted for the connection string when running the script.
 
 ## Tests
