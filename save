@@ -7,15 +7,28 @@ collectionName="general"
 
 printf "\e[32m💾 Save a note\e[0m\n"
 
-# Prompt for username at the beginning
+# Prompt for username
 printf "\n\e[36mPlease enter your username:\e[0m\n"
 read username
+
+if [ -z "$username" ]; then
+  printf "\n\e[31mUsername is required\e[0m\n"
+  exit 1
+fi
 
 printf "\n\e[32mWelcome, $username!\e[0m\n"
 
 # Prompt for password
-printf "\e[36mPlease enter your password:\e[0m\n"
+printf "\n\e[36mPlease enter your password:\e[0m\n"
 read -s password
+
+if [ -z "$password" ]; then
+  printf "\n\e[31mPassword is required\e[0m\n"
+  exit 1
+fi
+
+printf "\n\e[32mUsing database: $dbName\e[0m\n"
+printf "\n\e[32mUsing collection: $collectionName\e[0m\n"
 
 while true; do
   # \e[32m is for green and \e[0m resets

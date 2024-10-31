@@ -1,2 +1,4 @@
 config.yaml
 note_temp.json
+.DS_Store
+tests/input.txt

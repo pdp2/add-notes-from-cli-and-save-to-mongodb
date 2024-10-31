@@ -47,8 +47,8 @@ create_test_input() {
     fi
     
     local input_file="$1"
-    local username="${2:-testuser}"
-    local password="${3:-password123}"
+    local username="${2:-$'\n'}"
+    local password="${3:-$'\n'}"
     local note="${4:-Test note}"
     local tags=()
     
@@ -58,34 +58,30 @@ create_test_input() {
         tags=("$@")
     fi
     
-    # Create the initial content
-    cat > "$input_file" << EOF
-$username
-$password
-$note
-EOF
+    # Create the initial content with extra newlines
+    printf '%b\n' "$username" > "$input_file"
+    printf '%b\n' "$password" >> "$input_file"
+    printf '%b\n' "$note" >> "$input_file"
     
     # If no tags provided, add a default tag
     if [ ${#tags[@]} -eq 0 ]; then
-        cat >> "$input_file" << EOF
-tag1
-n
-EOF
+        printf '%s\n' "tag1" >> "$input_file"
+        # n to indicate no more tags
+        printf '%s\n' "n" >> "$input_file"
     else
         # Add each provided tag
         local last_idx=$((${#tags[@]} - 1))
         local i=0
         for tag in "${tags[@]}"; do
-            echo "$tag" >> "$input_file"
+            printf '%s\n' "$tag" >> "$input_file"
             if [ $i -eq $last_idx ]; then
-                echo "n" >> "$input_file"
+                printf '%s\n' "n" >> "$input_file"
             else
-                echo "y" >> "$input_file"
+                printf '%s\n' "y" >> "$input_file"
             fi
             ((i++))
         done
     fi
     
-    # Add exit command
-    echo "exit" >> "$input_file"
+    printf '%s\n' "exit" >> "$input_file"
 }
