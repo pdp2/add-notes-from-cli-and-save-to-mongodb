@@ -8,6 +8,8 @@ You can specify the connection string in a file called "config.yaml" in the foll
 uri: mongodb+srv://cluster7.something.mongodb.net/
 ```
 
+Alternatively you will be prompted for the connection string when running the script.
+
 ## Run
 
 After downloading the repo, you can run the script by entering the following command when inside the repo folder:
@@ -16,7 +18,16 @@ After downloading the repo, you can run the script by entering the following com
 ./save
 ```
 
-Alternatively you will be prompted for the connection string when running the script.
+The save script uses the following defaults:
+
+```
+# Change this to your database name
+dbName="notes"
+# Change this to your collection name
+collectionName="general"
+```
+
+Update them to the database name and collection you want to use.
 
 ## Tests
 
